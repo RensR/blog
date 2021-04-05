@@ -2,3 +2,14 @@ baseURL = "https://blog.rens.dev/"
 languageCode = "en-us"
 title = "Blogchain"
 theme = "ananke"
+
+[sitemap]
+  changefreq = "monthly"
+  priority = 0.5
+  filename = "sitemap.xml"
+
+[params]
+  favicon = "favicon.ico"
+  github = "https://github.com/RensR"
+  linkedin = "https://www.linkedin.com/in/rens-rooimans/"
+  featured_image = "/images/background-2.jpg"
