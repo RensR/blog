@@ -1,10 +1,8 @@
 ---
 title: 'Work in progress'
 date: 2021-04-05T15:16:05+01:00
-featured_image: "/images/background-2.jpg"
 draft: false
 tags: ["blockchain", "Code", "C#"]
-disable_share: false
 ---
 
 This post is a placeholder for the actual blog post.
