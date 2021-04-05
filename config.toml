@@ -2,6 +2,7 @@ baseURL = "https://blog.rens.dev/"
 languageCode = "en-us"
 title = "Blogchain"
 theme = "ananke"
+enableRobotsTXT = true
 
 [sitemap]
   changefreq = "monthly"
@@ -13,3 +14,9 @@ theme = "ananke"
   github = "https://github.com/RensR"
   linkedin = "https://www.linkedin.com/in/rens-rooimans/"
   featured_image = "/images/background-2.jpg"
+  recent_post_number = 3
+  background_color_class = "bg-near-white"
+  body_classes = "avenir bg-near-white"
+  post_content_classes = "avenir bg-near-white"
+  
+
