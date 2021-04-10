@@ -76,7 +76,7 @@ The existing Java SDK and the Golang code of the chain itself were used as inspi
 
 ## RLP
 
-Recursive Length Prefix, or RLP, encoding is a way to store the values of a transaction in a single hex string. Each value, the recipient that we see in [codeblock 2] is padded to the proper length, encoded as hexadecimal, and combined in a list. This encoded list is a fully complete and signed transaction, ready to enter the transaction pool.
+Recursive Length Prefix, or RLP, encoding is a way to store the entire contents of a transaction in a single hex string. Each value is padded to the proper length, encoded as hexadecimal, and combined in a list. This encoded list contains a complete and signed transaction, ready to enter the transaction pool.
 
 As I mentioned, we use the RLP engine from Nethereum. Since the transaction model for Ethereum is different from VeChains, we cannot use the Encode function provided for a complete transaction. The encoder would not know how to handle clauses. At this point, I thought it was a good idea to create the RLP engine myself. This was incorrect. The individual functions from Nethereum.RLP like EncodeByte, EncodeElement, and EncodeList are now used to be able to parse the VeChain clauses.
 
