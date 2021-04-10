@@ -1,13 +1,13 @@
 ---
-title: 'What you learn from building a blockchain SDK'
-date: 2021-04-05T15:16:05+01:00
+title: 'Learnings from building a blockchain SDK'
+date: 2021-04-09T15:16:05+01:00
 draft: false
 tags: ["blockchain", "Code", "C#"]
 ---
 
 __*The best way to learn is to do.*__
 
-So what better way to learn more about the inner workings of a blockchain than to build an SDK for one? The goal when coding was to create a functional blockchain SDK and learn some things along the way. Here follows a brief highlight reel of what I’ve encountered while building an SDK for a blockchain. This post goes into the guts of what a transaction is and comes out wielding a funcional SDK.
+So what better way to learn more about the inner workings of a blockchain than to build an SDK for one? The goal when coding was to create a functional blockchain SDK and learn some things along the way. Here follows a brief highlight reel of what I’ve encountered along the way. This post goes into the guts of what a transaction is and comes back out wielding a funcional development kit.
 
 *This posts assumes basic knowledge of blockchains.*
 
