@@ -1,6 +1,6 @@
 ---
 title: 'How to lower L1 transaction fees on any blockchain'
-date: 2021-04-11T15:14:05+01:00
+date: 2021-04-10T15:14:05+01:00
 draft: true
 tags: ["blockchain", "Code"]
 ---
@@ -55,7 +55,7 @@ These values can be seen on most [blockchain explorers](https://etherscan.io/tx/
 
 We have seen that gas costs depends on the transaction data field, but how can we leverage it without materially affecting our transaction? We are used to sending rounded numbers, sending exactly 100 tokens feels better than 99.98895 tokens. Machines also appriciate round numbers but they do differ in what they deem round. Since all values are base 256 instead of our humanly accepted [decimal](https://en.wikipedia.org/wiki/Decimal), or base 10, computers don't agree that 100 tokens is a round number.
 
-Take the example above where sending 3.000 tokens with a 18 decimal precision results in the hex string ```A2A15D09519BE00000```. When we transfer exactly 3.000,045870175091687424 tokens it would be equivalent to ```A2A200000000000000```. Increasing the number of tokens to transfer by 0.001529006% reduces the number of non-zero bytes in the string by 5, saving 320 gas! At a gas price of 200 gwei that is 64.000 gwei, or 0.000064 ether. At the current price of $2150 dollar per ether this converts to **over $0.13 saved**.
+Take the example above where sending 3.000 tokens with a 18 decimal precision results in the hex string ```A2A15D09519BE00000```. When we transfer exactly 3.000,045870175091687424 tokens it would be equivalent to ```A2A200000000000000```. Increasing the number of tokens to transfer by 0.001529006% reduces the number of non-zero bytes in the string by 5, saving 320 gas! At a gas price of 200 gwei that is 64.000 gwei, or 0.000064 ether. At the current price of $2150 per ether this converts to **over $0.13 saved**.
 
 
 ```
