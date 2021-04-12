@@ -53,7 +53,7 @@ These values can be seen on most [blockchain explorers](https://etherscan.io/tx/
 
 ## What can we save?
 
-We have seen that gas costs depends on the transaction data field, but how can we leverage it without materially affecting our transaction? We are used to sending rounded numbers, sending exactly 100 tokens feels better than 99.98895 tokens. Machines also appriciate round numbers but they do differ in what they deem round. Since all values are base 256 instead of our humanly accepted [decimal](https://en.wikipedia.org/wiki/Decimal), or base 10, computers don't agree that 100 tokens is a round number.
+We have seen that gas costs depends on the transaction data field, but how can we leverage it without materially affecting our transaction? We are used to sending rounded numbers, sending exactly 100 tokens feels better than 99.98895 tokens. Machines also appriciate round numbers but they do differ in what they deem round. Since all values are base 256 instead of our humanly accepted decimal, or base 10, computers don't agree that 100 tokens is a round number.
 
 Take the example above where sending 3.000 tokens with a 18 decimal precision results in the hex string ```A2A15D09519BE00000```. When we transfer exactly 3,000.045870175091687424 tokens it would result in ```A2A200000000000000```. Increasing the number of tokens to transfer by 0.00153% reduces the number of non-zero bytes in the string by 5, saving 320 gas! At a gas price of 200 gwei that is 64,000 gwei, or 0.000064 ether. At the current price of $2,150 per ether this converts to **over $0.13 saved**.
 
@@ -79,6 +79,6 @@ One step further, we're able to use method names within the solidity smart contr
 
 ## In summary
 
-The transaction cost of contract calls is directly correlated to the number of tokens we transact. Because of this, we are able to save some of the gas cost of transactions if we allow for a slight variation in the number of tokens to transact with. The savings scale with the variance that is allowed e.g. allowing a 1% token value change will yield a cheaper transaction than a 0.1% value change. 
+The transaction cost of contract calls is directly correlated to the number of tokens we transact. Because of this, we are able to save some of the gas cost of transactions if we allow for a slight variation in the number of tokens to transact with. The savings scale with the variance that is allowed e.g. allowing a 0.1% token value change will yield a cheaper transaction than a 0.01% value change. 
 
 Token amounts are encoded in base 256, therefore, using values [256^x] for any x will yield the cheapest gas cost. Since this is also true for referencing smart contract addresses, when expecting many references to your contract it might be beneficial to redeploy it until you get a contract with a lot of zero's. This would reduce the gas cost of any transaction that references the contract in the future. This would be beneficial if your contract handles transactions that need a token to be approved with e.g. the [ERC-20 standard 'approve'](https://ethereum.org/en/developers/docs/standards/tokens/erc-20/) function.
