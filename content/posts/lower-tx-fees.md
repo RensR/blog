@@ -38,13 +38,12 @@ The example tranasction above translates to the following.
 1   _amount     uint256         3000000000000000000000
 ```
 
-These values can be seen on most [blockchain explorers](https://etherscan.io/tx/0xabb28019cb67085bc676a23d9d1511516b0ab75e39da424fdeeab7953626e95c)  in the 'Input Data' field. The transaction above specifies 3000000000000000000000 as sender amount, as most tokens have an 18 decimal precicion this translates to 3,000 actual tokens. Addresses are padded to 64 bytes with leading zero's while the \_amount parameter specifies uint256 an unsigned 64 byte integer. This transaction cost structure can be seen in the table below.
-
+These values can be seen on most [blockchain explorers](https://etherscan.io/tx/0xabb28019cb67085bc676a23d9d1511516b0ab75e39da424fdeeab7953626e95c)  in the 'Input Data' field. The transaction above specifies 3000000000000000000000 as sender amount, as most tokens have an 18 decimal precicion this translates to 3,000 actual tokens. Addresses are padded to 64 bytes with leading zero's while the \_amount parameter specifies uint256 as its type, an unsigned 256 bit integer. The contents of the data field is simply the concattenation of the MethodID, the \_to, and the \_amount field. This results in 4 bytes for the method id and 64 bytes for the address and amount respectively.
 
 ```
                    | non-zero bytes    | zero bytes    | formula            | cost  
 -------------------|-------------------|---------------|--------------------|-----------
- function          | 4                 | 0             | 4 x 68             | 272  
+ methodId          | 4                 | 0             | 4 x 68             | 272  
  address           | 40                | 24            | 40 * 68 + 24 * 4   | 2816 
  amount            | 14                | 50            | 14 * 68 + 50 * 4   | 1152 
 -------------------|-------------------|---------------|--------------------|-------- +
