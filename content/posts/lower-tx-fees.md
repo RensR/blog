@@ -44,8 +44,8 @@ These values can be seen on most [blockchain explorers](https://etherscan.io/tx/
                    | non-zero bytes    | zero bytes    | formula            | cost  
 -------------------|-------------------|---------------|--------------------|-----------
  methodId          | 4                 | 0             | 4 x 68             | 272  
- address           | 40                | 24            | 40 * 68 + 24 * 4   | 2816 
- amount            | 14                | 50            | 14 * 68 + 50 * 4   | 1152 
+ _to               | 40                | 24            | 40 * 68 + 24 * 4   | 2816 
+ _amount           | 14                | 50            | 14 * 68 + 50 * 4   | 1152 
 -------------------|-------------------|---------------|--------------------|-------- +
  total             | 58                | 74            | 58 * 68 + 74 * 4   | 4240 gas
 ```
@@ -67,17 +67,19 @@ Take the example above where sending 3.000 tokens with a 18 decimal precision re
  The dollar savings calculation assumes the current values of $2150 per eth and 200 gwei per gas.
 ```
 
-We see that changing a transaction amount by less than 0.0001% saves between $0.083 and $0.165 while in the absolute best case a potential $1.734 can be saved by changing 63 non-zero bytes to zero's. A basic token transfer transaction costs about 42.000 gas, saving 192 would be **0.46%** while saving 384 would amount to **0.91%** of the **total transaction**.
+We see that changing a transaction amount by less than 0.0001% saves between $0.083 and $0.165 while in the absolute best case a potential $1.734 can be saved by changing 63 non-zero bytes to zero's. A basic token transfer transaction costs about 42.000 gas, saving 192 would be **0.46%** while saving 384 would amount to **0.91%** of the **total transaction**, including execution cost. The theoretical best case scenario saves almost **9%**!
 
 ## To the extreme
 
 We have seen that addresses also unfluence the transaction price; sending tokens to 0x000000000000000000000000 is cheaper than sending the same amount to any other address. If you expect to receive an extreme amount of transfer transactions it might be worth it to generate an address with a lot of zero-bytes. The same concept works for smart contracts, although it is more expensive to iterate through adresses as the deployment costs have to be paid for each attempt to get an address with many zero-bytes.
 
-One step further, we're able to use method names within the solidity smart contract that hash to values with zero-bytes so any transaction using that method will be cheaper.
+One step further, we're able to use method names within the solidity smart contract that hash to values with zero-bytes so any transaction using that method will be cheaper. Since this this method reduces the gas amount of a transaction it even allows for more transactions to fit in a single block.
 
 
 ## In summary
 
-The transaction cost of contract calls is directly correlated to the number of tokens we transact. Because of this, we are able to save some of the gas cost of transactions if we allow for a slight variation in the number of tokens to transact with. The savings scale with the variance that is allowed e.g. allowing a 0.1% token value change will yield a cheaper transaction than a 0.01% value change. 
+We have seen that we can realisticly reduce transaction costs by up to 1% by changing the values of e.g. token amounts that we transact with by less than 0.0001%. Since numbers are encoded in base 256 and zero-bytes are cheaper than non-zero bytes, using values that, when converted to base 256, result in zero-bytes will reduce transaction costs.
 
-Token amounts are encoded in base 256, therefore, using values [256^x] for any x will yield the cheapest gas cost. Since this is also true for referencing smart contract addresses, when expecting many references to your contract it might be beneficial to redeploy it until you get a contract with a lot of zero's. This would reduce the gas cost of any transaction that references the contract in the future. This would be beneficial if your contract handles transactions that need a token to be approved with e.g. the [ERC-20 standard 'approve'](https://ethereum.org/en/developers/docs/standards/tokens/erc-20/) function.
+Because of this, we are able to save some of the gas cost of transactions if we allow for a slight variation in the number of e.g. tokens to transact with. The savings scale slightly with the variance that is allowed; allowing a 0.1% token value change will yield a cheaper transaction than a 0.001% value change. 
+
+Since this is also true for referencing addresses, it is cheaper to send tokens to an address with zero-bytes than one without. Deploying a smart contract on an address with zero bytes would reduce the gas cost of any future transaction that references the contract. This would be beneficial if your contract handles transactions that e.g. need a token to be approved with the [ERC-20 standard 'approve'](https://ethereum.org/en/developers/docs/standards/tokens/erc-20/) or transfer function.
