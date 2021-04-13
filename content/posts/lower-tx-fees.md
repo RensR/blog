@@ -7,23 +7,23 @@ tags: ["blockchain", "Code"]
 
 __*Cheaper transactions for everyone*__
 
-## Ever increasing transaction costs
+## Ever-increasing transaction costs
 
 Transaction fees on blockchains like Ethereum are once again [prohibitively high](https://etherscan.io/chart/gasprice). Gas prices routinely approach 200 gwei, making even the most basic transaction cost multiple dollars. Sadly we cannot change the gas price, but what if we could change the amount of gas we use? There is a simple method that anyone can use on any blockchain to reduce the gas cost of (smart contract) transactions, without relying on layer 2 scaling or waiting for EIP-1559-like proposals. 
 
-Our method proposed is able to reduce transaction costs for most smart contract calls and, therefore, almost every token interaction. Why isn't anyone using this method? We have to give up some liberties on what amounts we work with, e.g. sending a fraction of a token more than we actually want to send. Savings are ikely in the range of 0.2% to 1.0% of the total transaction cost. 
+Our method proposed is able to reduce transaction costs for most smart contract calls and, therefore, almost every token interaction. Why isn't anyone using this method? We have to give up some liberties on what amounts we work with, e.g. sending a fraction of a token more than we want to send. Savings are likely in the range of 0.2% to 1.0% of the total transaction cost. 
 
-The method is not limited to simple transctions, at the end of this post we will look into applying the same technique in other situations to safe gas, like contract deployments. 
+The method is not limited to simple transactions, at the end of this post we will look into applying the same technique in other situations to safe gas, like contract deployments. 
 
 ![Historical transaction fees on Ethereum](/images/eth-gas-prices.png)
 
 ## How gas works
 
-In my [previous post](/posts/learn-from-building-sdk/) I went over how the gas price of a transaction is calculated. While the example was from VeChain, the same holds for Ethereum and most Ethereum based blockchains. In summary, transactions have an intrinsic cost and an execution cost. The intrinsic cost for Ethereum is 21.000 gas plus the cost of the data field. As can be seen in the [yellow paper](http://paper.gavwood.com/) (appendix H. Virtual Machine Specification), data field cost is increases by 4 for every zero byte and 68 for every non-zero byte. When we replace non-zero bytes with zero bytes, the transaction cost will decrease. How will we change the number of non-zero bytes while still maintaining a valid and sensible data field?
+In my [previous post](/posts/learn-from-building-sdk/), I went over how the gas price of a transaction is calculated. While the example was from VeChain, the same holds for Ethereum and most Ethereum based blockchains. In summary, transactions have an intrinsic cost and an execution cost. The intrinsic cost for Ethereum is 21.000 gas plus the cost of the data field. As can be seen in the [yellow paper](http://paper.gavwood.com/) (appendix H. Virtual Machine Specification), data field cost is increased by 4 for every zero byte and 68 for every non-zero byte. When we replace non-zero bytes with zero bytes, the transaction cost will decrease. How will we change the number of non-zero bytes while still maintaining a valid and sensible data field?
 
 ![Gas cost for adding bytes to the data field](/images/gas-price-per-byte.png)
 
-We will use the example of sending ERC-20 tokens to demonstrate the tecnique. The ERC-20 standard for sending a token is called [transfer](https://ethereum.org/en/developers/docs/standards/tokens/erc-20/#body), it has two mandatory arguments: an address and an amount. The amount and address values will have to be included in the data field of the transaction and, therefore, increase the total gas cost. 
+We will use the example of sending ERC-20 tokens to demonstrate the technique. The ERC-20 standard for sending a token is called [transfer](https://ethereum.org/en/developers/docs/standards/tokens/erc-20/#body), it has two mandatory arguments: an address and an amount. The amount and address values will have to be included in the data field of the transaction and, therefore, increase the total gas cost. 
 
 ```
 Function: transfer(address _to, uint256 _amount)
@@ -41,7 +41,7 @@ The example tranasction above translates to the following.
 1   _amount     uint256         3000000000000000000000
 ```
 
-These values can be seen on most [blockchain explorers](https://etherscan.io/tx/0xabb28019cb67085bc676a23d9d1511516b0ab75e39da424fdeeab7953626e95c) in the 'Input Data' field. The transaction above specifies 3000000000000000000000 as sender \_amount, as most tokens have an 18 decimal precicion this translates to 3,000 actual tokens. Both of the arguments are padded to a fixed length, 64 bytes. Addresses are simply padded with leading zero's while the \_amount parameter is a hexadecimal string of the [unsigned 256 bit integer](https://en.wikipedia.org/wiki/256-bit_computing). The contents of the data field is the concattenation of the MethodID, the \_to, and the \_amount field. This results in 4 bytes for the method id and 64 bytes for both the address and amount.
+These values can be seen on most [blockchain explorers](https://etherscan.io/tx/0xabb28019cb67085bc676a23d9d1511516b0ab75e39da424fdeeab7953626e95c) in the 'Input Data' field. The transaction above specifies 3000000000000000000000 as sender \_amount, as most tokens have an 18 decimal precision this translates to 3,000 actual tokens. Both of the arguments are padded to a fixed length, 64 bytes. Addresses are simply padded with leading zero's while the \_amount parameter is a hexadecimal string of the [unsigned 256-bit integer](https://en.wikipedia.org/wiki/256-bit_computing). The contents of the data field consists of the concatenation of the MethodID, the \_to, and the \_amount field. This results in 4 bytes for the method id and 64 bytes for both the address and amount.
 
 ```
                    | non-zero bytes    | zero bytes    | formula            | cost  
@@ -55,9 +55,9 @@ These values can be seen on most [blockchain explorers](https://etherscan.io/tx/
 
 ## What can we save?
 
-We have seen that gas costs depends on the transaction data field, but how can we leverage it without materially affecting our transaction? We are used to sending rounded numbers, sending exactly 100 tokens feels better than 99.98895 tokens. Machines also appriciate round numbers but they do differ in what they think is 'round'. Since all values are base 256 instead of our humanly accepted decimal, or base 10, computers don't see 100 tokens as a round number. The number of zero-bytes directly correlates to the roundness of a value in base 256.
+We have seen that gas cost depends on the transaction data field, but how can we leverage it without materially affecting our transaction? We are used to sending rounded numbers, sending exactly 100 tokens feels better than 99.98895 tokens. Machines also appreciate round numbers but they do differ in what they think is 'round'. Since all values are base 256 instead of our humanly accepted decimal, or base 10, computers don't see 100 tokens as a round number. The number of zero-bytes directly correlates to the roundness of a value in base 256.
 
-Take the example above where sending 3.000 tokens with a 18 decimal precision results in the hex string ```A2A15D09519BE00000```. Slighly changing the number of tokens to 3,000.045870175091687424 would result in ```A2A200000000000000```. Sending 0.00153% additional tokens reduces the number of non-zero bytes in the string by 5, saving 320 gas! At a gas price of 150 gwei that is 48,000 gwei, 0.000048 ether. With the current price of $2,300 per ether this converts to **over $0.11 saved**.
+Take the example above where sending 3.000 tokens with an 18 decimal precision results in the hex string ```A2A15D09519BE00000```. Slightly changing the number of tokens to 3,000.045870175091687424 would result in ```A2A200000000000000```. Sending 0.00153% additional tokens reduces the number of non-zero bytes in the string by 5, saving 320 gas! At a gas price of 150 gwei that is 48,000 gwei, 0.000048 ether. With the current price of $2,300 per ether this converts to **over $0.11 saved**.
 
 
 ```
@@ -70,19 +70,19 @@ Take the example above where sending 3.000 tokens with a 18 decimal precision re
  The dollar savings calculation assumes the current values of $2300 per eth and 150 gwei per gas.
 ```
 
-We see that changing a transaction amount by less than 0.0001% saves between $0.066 and $0.132 while in the absolute best case a potential $1.391 can be saved by changing 63 non-zero bytes to zero's. A basic token transfer transaction costs about 42.000 gas, saving 192 would be **0.46%** while saving 384 would amount to **0.91%** of the **total transaction**, including execution cost. The theoretical best case scenario saves almost **9%**!
+We see that changing a transaction amount by less than 0.0001% saves between $0.066 and $0.132 while in the absolute best case a potential $1.391 can be saved by changing 63 non-zero bytes to zero's. A basic token transfer transaction costs about 42.000 gas, saving 192 would be **0.46%** while saving 384 would amount to **0.91%** of the **total transaction**, including execution cost. The theoretical best-case scenario saves almost **9%**!
 
 ## To the extreme
 
-We have seen that addresses also unfluence the transaction price; sending tokens to 0x000000000000000000000000 is cheaper than sending the same amount to any other address. If you expect to receive an extreme amount of transfer transactions it might be worth it to generate an address with a lot of zero-bytes. The same concept works for smart contracts, although it is more expensive to iterate through adresses as the deployment costs have to be paid for each attempt to get an address with many zero-bytes.
+We have seen that addresses also influence the transaction price; sending tokens to 0x000000000000000000000000 is cheaper than sending the same amount to any other address. If you expect to receive an extreme amount of transfer transactions it might be worth it to generate an address with a lot of zero bytes. The same concept works for smart contracts, although it is more expensive to iterate through addresses as the deployment costs have to be paid for each attempt to get an address with many zero bytes.
 
-One step further, we're able to use method names within the solidity smart contract that hash to values with zero-bytes so any transaction using that method will be cheaper. Since this this method reduces the gas amount of a transaction it even allows for more transactions to fit in a single block.
+One step further, we're able to use method names within the solidity smart contract that hash to values with zero bytes so any transaction using that method will be cheaper. Since this method reduces the gas amount of a transaction it even allows for more transactions to fit in a single block.
 
 
 ## In summary
 
-We have seen that we can realisticly reduce transaction costs by up to 1% by changing the values of e.g. token amounts that we transact with by less than 0.0001%. Since numbers are encoded in base 256 and zero-bytes are cheaper than non-zero bytes, using values that, when converted to base 256, result in zero-bytes will reduce transaction costs.
+We have seen that we can realistically reduce transaction costs by up to 1% by changing the values of e.g. token amounts that we transact with by less than 0.0001%. Since numbers are encoded in base 256 and zero-bytes are cheaper than non-zero bytes, using values that, when converted to base 256, result in zero bytes will reduce transaction costs.
 
-Because of this, we are able to save some of the gas cost of transactions if we allow for a slight variation in the number of e.g. tokens to transact with. The savings scale slightly with the variance that is allowed; allowing a 0.1% token value change will yield a cheaper transaction than a 0.001% value change. 
+Because of this, we can save some of the gas cost of transactions if we allow for a slight variation in the number of e.g. tokens to transact with. The savings scale slightly with the variance that is allowed; allowing a 0.1% token value change will yield a cheaper transaction than a 0.001% value change. 
 
-Since this is also true for referencing addresses, it is cheaper to send tokens to an address with zero-bytes than one without. Deploying a smart contract on an address with zero bytes would reduce the gas cost of any future transaction that references the contract. This would be beneficial if your contract handles transactions that e.g. need a token to be approved with the [ERC-20 standard](https://ethereum.org/en/developers/docs/standards/tokens/erc-20/) 'approve' or transfer function.
+Since this is also true for referencing addresses, it is cheaper to send tokens to an address with zero bytes than one without. Deploying a smart contract on an address with zero bytes would reduce the gas cost of any future transaction that references the contract. This would be beneficial if your contract handles transactions that e.g. need a token to be approved with the [ERC-20 standard](https://ethereum.org/en/developers/docs/standards/tokens/erc-20/) 'approve' or transfer function.
