@@ -13,7 +13,7 @@ Transaction fees on blockchains like Ethereum are once again [prohibitively high
 
 Our method proposed can reduce transaction costs for most smart contract calls and, therefore, almost every token interaction. Why isn't anyone using this method? We have to give up some liberties on what amounts we work with, e.g. sending a fraction of a token more than we want to send. Savings are likely in the range of 0.2% to 1.0% of the total transaction cost. 
 
-The method is not limited to simple transactions; at the end of this article, we will look into applying the same technique in other situations to safe gas, like contract deployments. 
+The method is not limited to simple transactions; at the end of this article, we will look into applying the same technique in other situations to save gas, like contract deployments. 
 
 ![Historical transaction fees on Ethereum](/images/eth-gas-prices.png)
 
