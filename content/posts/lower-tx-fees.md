@@ -11,7 +11,7 @@ __*Cheaper transactions for everyone*__
 
 Transaction fees on blockchains like Ethereum are once again [prohibitively high](https://etherscan.io/chart/gasprice). Gas prices routinely approach 200 [gwei](https://www.investopedia.com/terms/g/gwei-ethereum.asp), making even the most basic transaction cost multiple dollars. Sadly we cannot change the gas price, but what if we could change the amount of gas we use? There is a simple method that anyone can use on any blockchain to reduce the gas cost of (smart contract) transactions, without relying on [layer 2 scaling](https://ethereum.org/en/developers/docs/layer-2-scaling/) or waiting for [EIP-1559](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1559.md)-like proposals. 
 
-Our proposed method can reduce transaction costs for most smart contract calls and, therefore, almost every token interaction. Why isn't anyone using this method? We have to give up some liberties on what amounts we work with, e.g. sending a fraction of a token more than we want to send. Savings are likely in the range of 0.2% to 1.0% of the total transaction cost. 
+Our proposed method can reduce transaction costs for most smart contract calls and, therefore, almost every token interaction. Why isn't anyone using this method? We have to give up some liberties on what amounts we work with, e.g. sending a fraction of a token more than we want to send. Savings are likely in the range of 0.2% to 1.0% of the total transaction cost. Firstly, we'll look at how gas works before we move on to the expected savings from using the our proposed method.
 
 The method is not limited to simple transactions; at the end of this article, we will look into applying the same technique in other situations to save gas, like contract deployments. 
 
