@@ -48,7 +48,7 @@ These values can be found on most [blockchain explorers](https://etherscan.io/tx
 - Addresses have 160 bits (20 bytes)
 - The amount has 256 bits (32 bytes)
 
-Addresses are padded with leading zero's to also reach 32 bytes (64 hex characters. They are both displayed in their hexadecimal notation, meaning two characters correspond to one single byte. The data field consists of the concatenation of the MethodID, the padded \_to field, and the \_amount field. This results in 4 bytes for the method id and 32 bytes for both the address and amount. In the following table, we see the gas cost calculation for the example transaction.
+Addresses are padded with leading zero's to also reach 32 bytes (64 hex characters). They are both displayed in their hexadecimal notation, meaning two characters correspond to one single byte. The data field consists of the concatenation of the MethodID, the padded \_to field, and the \_amount field. This results in 4 bytes for the method id and 32 bytes for both the address and amount. In the following table, we see the gas cost calculation for the example transaction.
 
 ```
                    | non-zero bytes    | zero bytes    | formula            | cost  
